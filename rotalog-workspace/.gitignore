@@ -1,0 +1,45 @@
+# Node
+node_modules/
+npm-debug.log
+package-lock.json
+dist/
+build/
+
+# Java/Maven
+target/
+.classpath
+.project
+.settings/
+*.jar
+*.war
+
+# .NET
+bin/
+obj/
+*.dll
+*.exe
+*.pdb
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Database
+pgdata/
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db

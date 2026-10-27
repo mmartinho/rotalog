@@ -1,0 +1,276 @@
+openapi: 3.0.0
+info:
+  title: RotaLog API
+  version: 1.0.0
+  description: API de logística e entregas
+  # TODO: Versão desatualizada há 2 anos
+
+servers:
+  - url: http://localhost:8080
+    description: API Frotas (Java)
+  - url: http://localhost:3000
+    description: API Entregas (Node)
+  - url: http://localhost:5000
+    description: API Notificações (.NET)
+
+paths:
+  /api/veiculos:
+    get:
+      summary: Listar veículos
+      tags:
+        - Veículos
+      responses:
+        '200':
+          description: Lista de veículos
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Veiculo'
+    post:
+      summary: Criar veículo
+      tags:
+        - Veículos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VeiculoInput'
+      responses:
+        '201':
+          description: Veículo criado
+
+  /api/entregas:
+    get:
+      summary: Listar entregas
+      tags:
+        - Entregas
+      responses:
+        '200':
+          description: Lista de entregas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Entrega'
+
+  # TODO: Endpoints que não existem mais
+  /api/rastreamento/real-time:
+    get:
+      summary: Rastreamento em tempo real (DESCONTINUADO)
+      deprecated: true
+      tags:
+        - Rastreamento
+      responses:
+        '200':
+          description: Dados de rastreamento
+
+  /api/manutencoes/alertas/verificar:
+    post:
+      summary: Verificar veículos que precisam de manutenção preventiva e enviar os alertas (API Frotas, porta 8080)
+      description: >
+        Veículo ATIVO elegível por km desde a última preventiva (> 50000) ou por tempo (última preventiva
+        há mais de 6 meses). Idempotente: veículo com alerta ENVIADA ou PENDENTE posterior à última
+        preventiva não gera novo alerta.
+      tags:
+        - Alertas de manutenção
+      responses:
+        '200':
+          description: Resumo da verificação
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ResumoVerificacaoAlertas'
+
+  /api/manutencoes/alertas:
+    get:
+      summary: Listar alertas de manutenção preventiva (API Frotas, porta 8080)
+      tags:
+        - Alertas de manutenção
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: '#/components/schemas/StatusAlerta'
+      responses:
+        '200':
+          description: Alertas, do mais recente ao mais antigo
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AlertaManutencao'
+        '400':
+          description: Status inválido
+
+  /api/notificacoes/alertas-manutencao:
+    post:
+      summary: Enviar o alerta de manutenção preventiva por e-mail (API Notificações, porta 5000)
+      tags:
+        - Notificações
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AlertaManutencaoRequest'
+      responses:
+        '200':
+          description: Resultado do envio (também quando o envio falha)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AlertaManutencaoResponse'
+        '400':
+          description: Campo obrigatório ausente (veiculoId, placa, motivo ou emailGestor)
+
+  # TODO: Endpoints faltando
+  # /api/manutencao (CRUD)
+  # /api/motoristas/{id}/disponibilidade
+
+components:
+  schemas:
+    Veiculo:
+      type: object
+      properties:
+        id:
+          type: integer
+        placa:
+          type: string
+        modelo:
+          type: string
+        # TODO: Campo desatualizado - backend usa data_cadastro
+        dataCadastro:
+          type: string
+          format: date-time
+        status:
+          type: string
+          enum: [ativo, inativo, manutencao]
+        quilometragem:
+          type: number
+
+    VeiculoInput:
+      type: object
+      required:
+        - placa
+        - modelo
+      properties:
+        placa:
+          type: string
+        modelo:
+          type: string
+        ano:
+          type: integer
+
+    Entrega:
+      type: object
+      properties:
+        id:
+          type: integer
+        numero_pedido:
+          type: string
+        status:
+          type: string
+          enum: [pendente, em_transito, entregue, cancelada]
+        driver_name:
+          type: string
+        destination_address:
+          type: string
+        distance_km:
+          type: number
+        estimated_time_minutes:
+          type: integer
+        progress_percentage:
+          type: number
+
+    StatusAlerta:
+      type: string
+      enum: [ENVIADA, FALHA, PENDENTE]
+
+    MotivoAlerta:
+      type: string
+      enum: [KM, TEMPO, KM_E_TEMPO]
+
+    AlertaManutencao:
+      type: object
+      properties:
+        id:
+          type: integer
+        veiculoId:
+          type: integer
+        placa:
+          type: string
+        motivo:
+          $ref: '#/components/schemas/MotivoAlerta'
+        kmDesdeUltimaPreventiva:
+          type: integer
+        dataReferencia:
+          type: string
+          format: date-time
+          description: Data da última preventiva concluída ou, sem preventiva, data de cadastro do veículo
+        status:
+          $ref: '#/components/schemas/StatusAlerta'
+        notificacaoId:
+          type: integer
+          nullable: true
+        mensagemErro:
+          type: string
+          nullable: true
+        dataCriacao:
+          type: string
+          format: date-time
+
+    ResumoVerificacaoAlertas:
+      type: object
+      properties:
+        verificados:
+          type: integer
+        elegiveis:
+          type: integer
+        novosAlertas:
+          type: integer
+        enviados:
+          type: integer
+        falhas:
+          type: integer
+        pendentes:
+          type: integer
+
+    AlertaManutencaoRequest:
+      type: object
+      required:
+        - veiculoId
+        - placa
+        - motivo
+        - emailGestor
+      properties:
+        veiculoId:
+          type: integer
+        placa:
+          type: string
+        motivo:
+          $ref: '#/components/schemas/MotivoAlerta'
+        kmDesdeUltimaPreventiva:
+          type: integer
+        dataReferencia:
+          type: string
+          format: date-time
+        emailGestor:
+          type: string
+
+    AlertaManutencaoResponse:
+      type: object
+      properties:
+        notificacaoId:
+          type: integer
+        status:
+          type: string
+          enum: [ENVIADA, FALHA]
+        mensagemErro:
+          type: string
+          nullable: true

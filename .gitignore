@@ -1,0 +1,131 @@
+# Credenciais e segredos
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+*.jks
+*.keystore
+id_rsa*
+id_ed25519*
+secrets.json
+credentials.json
+*.secret
+appsettings.*.local.json
+application-local.properties
+application-secrets.properties
+
+# FIXME: appsettings.json do notificacoes tem credenciais e deveria estar aqui
+# appsettings.json
+
+# Dependencias
+node_modules/
+yarn.lock
+pnpm-lock.yaml
+/rotalog-api-entregas/package-lock.json
+/rotalog-workspace/package-lock.json
+
+# Build output
+dist/
+build/
+out/
+out-tsc
+tmp
+target/
+bin/
+obj/
+!/rotalog-api-frotas/.mvn/wrapper/maven-wrapper.jar
+!/rotalog-api-frotas/**/src/main/**/target/
+!/rotalog-api-frotas/**/src/test/**/target/
+!/rotalog-api-frotas/**/src/main/**/build/
+!/rotalog-api-frotas/**/src/test/**/build/
+/rotalog-api-frotas/nbdist/
+/rotalog-api-frotas/nbbuild/
+/rotalog-workspace/*.jar
+/rotalog-workspace/*.war
+*.dll
+*.exe
+*.pdb
+.classpath
+.project
+.settings
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+testem.log
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage e testes
+coverage/
+*.lcov
+.nyc_output/
+.jest/
+__snapshots__/
+
+# IDEs e editores
+.idea
+*.iws
+*.iml
+*.ipr
+.c9/
+*.launch
+*.sublime-workspace
+*.swp
+*.swo
+*~
+**/.vscode/*
+!/rotalog-frontend/.vscode/settings.json
+!/rotalog-frontend/.vscode/tasks.json
+!/rotalog-frontend/.vscode/launch.json
+!/rotalog-frontend/.vscode/extensions.json
+/rotalog-api-frotas/nbproject/private/
+/rotalog-api-frotas/.nb-gradle/
+/rotalog-frontend/.sass-cache
+/rotalog-frontend/connect.lock
+/rotalog-frontend/libpeerconnection.log
+/rotalog-frontend/typings
+
+# Nx / Angular / Claude (frontend)
+.angular
+/rotalog-frontend/.nx/cache
+/rotalog-frontend/.nx/workspace-data
+/rotalog-frontend/.nx/polygraph
+/rotalog-frontend/.cursor/rules/nx-rules.mdc
+/rotalog-frontend/.github/instructions/nx.instructions.md
+/rotalog-frontend/.claude/worktrees
+/rotalog-frontend/.claude/settings.local.json
+
+# Misc
+*.tgz
+.eslintcache
+.node_repl_history
+*.tsbuildinfo
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+
+# Arquivos temporarios desta migracao
+/historico-commits.txt

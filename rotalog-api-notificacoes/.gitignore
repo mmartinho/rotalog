@@ -1,0 +1,11 @@
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.DotSettings.user
+*.log
+.DS_Store
+
+# FIXME: appsettings.json com credenciais deveria estar aqui
+# appsettings.json
